@@ -15,21 +15,11 @@ import processing
 from datetime import datetime
 
 # Settings for script
-<<<<<<< HEAD
-buffer_size=2
-sampling_distance=30
-road_segment_lenght=150
-field_to_summarize='we'
-save_path_ids_to_buffer=True
-sample_size='large' #set to large' if full sample set is to be used.
-=======
-buffer_size=20
-sampling_distance=70
-road_segment_lenght=200
-field_to_summarize='we'
-save_path_ids_to_buffer=True
-sample_size='small' # set to 'large' if full sample set is to be used.
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
+buffer_size=2 #buffer size in meters for road segment buffer
+sampling_distance=65 # point sampling distance for finding matching road segments
+road_segment_lenght=150 # Maximum segment lenght for created segments for the road network
+field_to_summarize='we' #Field with data to be summarized for road segments
+sample_size='small' #set to large' if full sample set is to be used.
 
 #Input data
 roads_url=(
@@ -44,7 +34,6 @@ else:
     paths_url=(
         "D:\OneDrive - Trivector AB\Projekt\Cykel mellan tatorter\Spring 2021\Test new alog\data\Test_sample_bike_paths_small.gpkg|layername=Test_sample_bike_paths_small"
     )
-<<<<<<< HEAD
 def delete_fields_from_layer (vlayer):
     fields_to_keep={'fid','PathID',field_to_summarize} #set with field names to keepLayerSet
     fields = vlayer.dataProvider().fields()
@@ -57,8 +46,6 @@ def delete_fields_from_layer (vlayer):
     vlayer.updateFields()
     
     return vlayer
-=======
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
 
 def create_dict_from_layer (layer):
     layer_dict={}
@@ -71,17 +58,14 @@ def create_dict_from_layer (layer):
     for feature in features:
         k+=1
         f_dict={}
-<<<<<<< HEAD
         field_values=[]
         for name in field_names:
             f_dict[name]=feature[name]
         
         layer_dict[feature['PathID']]=f_dict
-    
-    
+
+
     return layer_dict
-
-
 
 
 def add_data_to_road_segments(buffer_dict,outputs): 
@@ -101,7 +85,7 @@ def add_data_to_road_segments(buffer_dict,outputs):
         sum_segments[key]=sum
     
     road_segments.startEditing()
-    print(road_segments_sum_idx)
+
     for segment in road_segments.getFeatures(): 
         if segment ['SegmentID'] in sum_segments:               
             road_segments.changeAttributeValue(segment.id(),road_segments_sum_idx,sum_segments[segment ['SegmentID']])
@@ -114,54 +98,21 @@ def add_data_to_road_segments(buffer_dict,outputs):
     
 def load_vlayer(vlayer):
     #Just for testing
-=======
-        for name in field_names:
-            f_dict={feature[name]}
-            if k == 1:
-                print(f_dict,name)
-                
-    
-
-def add_data_to_buffers(buffer_dict,outputs): 
-    sum_buffers={}
-    create_dict_from_layer(outputs['paths_layer']['OUTPUT'])
-    
-#    for key,val in buffer_dict.items():
-#        sum=0
-#        sum_buffers[key]=""
-#        #for itms in val: 
-#        #    sum+= 
-    
-
-    
-def load_vlayer(vlayer):
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
     QgsProject.instance().addMapLayer(vlayer)
 
 def Match (outputs):
     paths=outputs['paths_layer']['OUTPUT'].getFeatures()
     crs = outputs['paths_layer']['OUTPUT'].crs().toWkt()
     buffers_dict= {}
-    a=0
     
     for path in paths:
-        a+=1
         
-<<<<<<< HEAD
         TempLayer = QgsVectorLayer('Linestring?crs='+ crs, 'paths' , 'memory')
         TempLayerDataProvider = TempLayer.dataProvider()
         TempLayerDataProvider.addAttributes(outputs['paths_layer']['OUTPUT'].fields())
         TempLayer.updateFields()
         TempLayerDataProvider.addFeatures([path])
         
-=======
-        TempLayer = QgsVectorLayer('Linestring?crs='+ crs, 'connector_lines' , 'memory')
-        TempLayerDataProvider = TempLayer.dataProvider()
-        TempLayerDataProvider.addAttributes([QgsField('PathID', QVariant.String)])
-        TempLayer.updateFields()
-        TempLayerDataProvider.addFeatures([path])
-
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
         alg_params = {
             'DISTANCE': sampling_distance,
             'END_OFFSET': 0,
@@ -191,8 +142,8 @@ def Match (outputs):
         outputs['JoinAttributesByLocation'] = processing.run('native:joinattributesbylocation', alg_params)
         
         matched_points=outputs['JoinAttributesByLocation']['OUTPUT'].getFeatures()
-<<<<<<< HEAD
-
+        
+        #Checking BufferID and SegmentID for matching points  
         for point in matched_points:
                 
             if point['SegmentID'] in buffers_dict:
@@ -202,28 +153,11 @@ def Match (outputs):
                 set_to_add.add(point['PathID'])
                 buffers_dict[point['SegmentID']]= set_to_add
 
-=======
-        
-        for point in matched_points:
-            
-                    
-            if point['BuffID'] in buffers_dict:
-                buffers_dict[point['BuffID']].add(point['PathID'])
-            else:
-                buffers_dict[point['BuffID']]=set(point['PathID'])
-            
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
     
     return buffers_dict
 
 def main():
-<<<<<<< HEAD
     
-    start_time=datetime.now()
-    print (start_time)
-=======
-    print (datetime.now() )
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
     outputs = {}
     paths_layer =QgsVectorLayer(paths_url, "paths", "ogr")
     roads_layer = QgsVectorLayer(roads_url, "roads", "ogr")
@@ -267,7 +201,6 @@ def main():
         'LENGTH': road_segment_lenght,
         'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
-<<<<<<< HEAD
     outputs['RoadSegments'] = processing.run('native:splitlinesbylength', alg_params)
 
 
@@ -282,40 +215,18 @@ def main():
         }
     outputs['RoadSegments'] = processing.run('native:fieldcalculator', alg_params)
         
-=======
-    outputs['SplitLinesByMaximumLength'] = processing.run('native:splitlinesbylength', alg_params)
-    
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
     # Buffer the road segments
     alg_params = {
             'DISSOLVE': False,
             'DISTANCE': buffer_size,
             'END_CAP_STYLE': 0,
-<<<<<<< HEAD
             'INPUT': outputs['RoadSegments']['OUTPUT'],
-=======
-            'INPUT': outputs['SplitLinesByMaximumLength']['OUTPUT'],
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
             'JOIN_STYLE': 0,
             'MITER_LIMIT': 2,
             'SEGMENTS': 5,
             'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
         }
     outputs['Buffer'] = processing.run('native:buffer', alg_params)
-<<<<<<< HEAD
-=======
-    
-    # Buffer with ID
-    alg_params = {
-        'FIELD_LENGTH': 0,
-        'FIELD_NAME': 'BuffID',
-        'FIELD_PRECISION': 0,
-        'FIELD_TYPE': 0,
-        'FORMULA': '$id ','INPUT': outputs['Buffer']['OUTPUT'],
-        'OUTPUT': QgsProcessing.TEMPORARY_OUTPUT
-        }
-    outputs['Buffer'] = processing.run('native:fieldcalculator', alg_params)
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
 
     # Create spatial index for buffer layer
     alg_params = {
@@ -335,19 +246,9 @@ def main():
         }
     outputs['paths_layer'] = processing.run('native:fieldcalculator', alg_params)
         
-<<<<<<< HEAD
     outputs['paths_layer']['OUTPUT'] = delete_fields_from_layer(outputs['paths_layer']['OUTPUT'])
     
     buffers_with_match=Match(outputs)
     add_data_to_road_segments(buffers_with_match,outputs)
     
-    time_passed=datetime.now()-start_time
-    
-    print ('Scriptet tog: ', time_passed.total_seconds(), ' sekunder' )
 main()
-=======
-    buffers_with_match=Match(outputs)
-    add_data_to_buffers(buffers_with_match,outputs)
-    print (datetime.now() )
-main()
->>>>>>> 5e5b531150b2ecc00bc03a8a80534d1acf6ea9b2
