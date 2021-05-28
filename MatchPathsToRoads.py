@@ -102,7 +102,7 @@ def load_vlayer(vlayer):
     QgsProject.instance().addMapLayer(vlayer)
 
 
-def Match(outputs):
+def match(outputs):
     paths = outputs['paths_layer']['OUTPUT'].getFeatures()
     crs = outputs['paths_layer']['OUTPUT'].crs().toWkt()
     buffers_dict = {}
@@ -256,7 +256,7 @@ def main():
         outputs['paths_layer']['OUTPUT']
     )
 
-    buffers_with_match = Match(outputs)
+    buffers_with_match = match(outputs)
     add_data_to_road_segments(buffers_with_match, outputs)
 
 
