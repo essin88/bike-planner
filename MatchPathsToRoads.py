@@ -2,16 +2,19 @@
 Script to match paths to roads and summarize statistics on road segments
 """
 
-from qgis.core import QgsProcessing
-from qgis.core import QgsProcessingAlgorithm
-from qgis.core import QgsProcessingMultiStepFeedback
-from qgis.core import QgsProcessingParameterVectorLayer
-from qgis.core import QgsProcessingParameterString
-from qgis.core import QgsProcessingParameterFeatureSink
-from qgis.core import QgsCoordinateReferenceSystem
-from qgis.core import QgsExpressionContextUtils
-import processing
 from datetime import datetime
+
+import processing
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsExpressionContextUtils,
+    QgsProcessing,
+    QgsProcessingAlgorithm,
+    QgsProcessingMultiStepFeedback,
+    QgsProcessingParameterFeatureSink,
+    QgsProcessingParameterString,
+    QgsProcessingParameterVectorLayer,
+)
 
 # Settings for script
 buffer_size = 2  # buffer size in meters for road segment buffer
