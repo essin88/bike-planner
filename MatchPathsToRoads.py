@@ -250,5 +250,7 @@ def main():
     
     buffers_with_match=Match(outputs)
     add_data_to_road_segments(buffers_with_match,outputs)
-    
-main()
+
+
+if __name__ == '__main__':
+    main()
